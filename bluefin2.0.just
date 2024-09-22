@@ -58,8 +58,15 @@ ansible-user:
 bluefin-user:
 	ujust dx-group
 	ujust toggle-user-motd
-	#ujust bluefin-cli
+	#ujust bluefin-cli   # This is already included in my dotfiles
 	brew bundle --file ~/Brewfile
+
+# Setup remote access
+enable-remote-access:
+	#!/bin/bash
+	pushd ~/repos/ansible-silverblue
+	ansible-playbook -K remote_access.yml
+	popd
 
 # Run all the stuff that needs a reboot afterwards
 first: devmode yadm get-ansible ansible-system-pre-reboot
@@ -70,7 +77,6 @@ user: ansible-user bluefin-user
 # Then fix problems and setup apps
 # - apply my gnome config?
 # - firefox profile copy? (acceleration)
-# https://docs.fedoraproject.org/en-US/quick-docs/configuring-xorg-as-default-gnome-session/
 
 # - fio fixed yet?
 
