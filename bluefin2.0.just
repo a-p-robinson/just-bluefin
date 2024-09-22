@@ -69,7 +69,7 @@ enable-remote-access:
 	popd
 
 # Setup remote access and remote-desktop
-enable-remote-access:
+enable-remote-desktop:
 	#!/bin/bash
 	pushd ~/repos/ansible-silverblue
 	ansible-playbook -K remote_access.yml --extra-vars "remote_desktop=true"
