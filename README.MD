@@ -18,6 +18,6 @@
   - Install brew bundle
 
 - `just -f bluefin2.0.just nvidia-laptop`
-  - If you are suing an nvidia laptop GPU
+  - If you are using an nvidia laptop GPU
   - **`reboot` when finished**
 
