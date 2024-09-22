@@ -24,12 +24,15 @@ nvidia-laptop:
 
 # Install my dotfiles.
 yadm:
+	#!/bin/bash
 	brew install yadm
+	pushd ~/
 	yadm clone --no-bootstrap -b ver4 -f https://github.com/a-p-robinson/yadm
 	yadm -C ~ submodule update --init --recursive
 	yadm bootstrap
 	gpgconf --reload gpg-agent
 	yadm decrypt
+	popd
 
 # Install ansible and get my configuration repo.
 get-ansible:
