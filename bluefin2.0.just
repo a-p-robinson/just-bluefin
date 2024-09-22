@@ -58,7 +58,7 @@ ansible-user:
 bluefin-user:
 	ujust dx-group
 	ujust toggle-user-motd
-	ujust bluefin-cli
+	#ujust bluefin-cli
 	brew bundle --file ~/Brewfile
 
 # Run all the stuff that needs a reboot afterwards
