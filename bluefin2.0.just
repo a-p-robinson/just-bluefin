@@ -68,6 +68,13 @@ enable-remote-access:
 	ansible-playbook -K remote_access.yml
 	popd
 
+# Setup remote access and remote-desktop
+enable-remote-access:
+	#!/bin/bash
+	pushd ~/repos/ansible-silverblue
+	ansible-playbook -K remote_access.yml --extra-vars "remote_desktop=true"
+	popd
+
 # Run all the stuff that needs a reboot afterwards
 first: devmode yadm get-ansible ansible-system-pre-reboot
 
