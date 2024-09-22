@@ -9,7 +9,7 @@
 
 - `just -f bluefin2.0.just first`
   - Run all the recipes that need a reboot
-  - Will setup dorfiles and pull in ansible repo
+  - Will setup dotfiles and pull in ansible repo
   - **`reboot` when finished**
 
 - `just -f bluefin2.0.just user`
