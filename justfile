@@ -75,6 +75,35 @@ enable-remote-desktop:
 	ansible-playbook -K remote_access.yml --extra-vars "remote_desktop=true"
 	popd
 
+# Quick setup your app configs by copying from another system
+quick-set-apps target:
+	#!/bin/bash
+	read -p "Make sure the applications are not running on target machine (continue: y/n?) " -n 1 -r
+	echo  
+	if [[ $REPLY =~ ^[Yy]$ ]]
+	then
+	echo "I will get your stuff from {{target}}:"
+	
+	echo "**Firefox**"
+	mv ~/.mozilla ~/.mozilla-local
+	scp -r $USER@{{target}}:.mozilla ~/
+	
+	echo "**Joplin**"
+	mv ~/.config/Joplin ~/.config/Joplin-local
+	mv ~/.config/joplin-desktop ~/.config/joplin-desktop-local
+	scp -r $USER@{{target}}:.config/Joplin ~/.config/
+	scp -r $USER@{{target}}:.config/joplin-desktop ~/.config/
+	
+	echo "**Zotero**"
+	mv ~/.zotero ~/.zotero-local
+	mv ~/Zotero ~/Zotero-local
+	scp -r $USER@{{target}}:.zotero ~/
+	scp -r $USER@{{target}}:Zotero ~/
+
+	fi
+
+
+
 # Run all the stuff that needs a reboot afterwards
 first: devmode yadm get-ansible ansible-system-pre-reboot
 
