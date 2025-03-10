@@ -25,3 +25,8 @@
   - Download app profiles and files from another machine (TARGET) via ssh
   - Make sure the apps are not running on TARGET when run
   - Uses the logged in user name for remote machine 
+
+  # For ubuntu
+
+  - `just --justfile justfile-ubuntu first`
+  - **`reboot` when finished**

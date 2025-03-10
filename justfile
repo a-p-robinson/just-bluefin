@@ -85,9 +85,19 @@ quick-set-apps target:
 	echo "I will get your stuff from {{target}}:"
 	
 	echo "**Firefox**"
-	mv ~/.mozilla ~/.mozilla-local
-	scp -r $USER@{{target}}:.mozilla ~/
+	read -p "Using the firefox snap? (y/n) " -n 1 -r SNAP
+	echo  
 	
+	if [[ $SNAP =~ ^[Yy]$ ]]
+	then
+	echo "  **SNAP**"
+		mv ~/snap/firefox/common/.mozilla ~/snap/firefox/common/.mozilla-local
+		scp -r $USER@{{target}}:.mozilla ~/snap/firefox/common/.mozilla/
+	else
+		mv ~/.mozilla ~/.mozilla-local
+		scp -r $USER@{{target}}:.mozilla ~/
+	fi
+
 	echo "**Joplin**"
 	mv ~/.config/Joplin ~/.config/Joplin-local
 	mv ~/.config/joplin-desktop ~/.config/joplin-desktop-local
