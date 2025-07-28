@@ -1,0 +1,79 @@
+# Choose bluefin version to rebase to.
+
+# Set the hostname
+hostname host:
+	hostnamectl set-hostname {{host}}
+
+# Install my dotfiles.
+yadm:
+	#!/bin/bash
+	sudo apt install yadm
+	pushd ~/
+	yadm clone --no-bootstrap -b ver4 -f https://github.com/a-p-robinson/yadm
+	yadm -C ~ submodule update --init --recursive
+	yadm bootstrap
+	gpgconf --reload gpg-agent
+	yadm decrypt
+	popd
+
+# Install ansible and get my configuration repo.
+get-ansible:
+	sudo apt install ansible
+	#!/bin/bash
+	if [ ! -d ~/repos ]; then mkdir ~/repos; fi
+	git clone -b bluefin git@github.com:a-p-robinson/ansible-ubuntu.git ~/repos/ansible-ubuntu
+
+# Apply "system" ansible roles.
+ansible-system-pre-reboot:
+	#!/bin/bash
+	pushd ~/repos/ansible-ubuntu
+	ansible-playbook -K peaches_system.yml
+	
+# Quick setup your app configs by copying from another system
+quick-set-apps target:
+	#!/bin/bash
+	read -p "Make sure the applications are not running on target machine (continue: y/n?) " -n 1 -r
+	echo  
+	if [[ $REPLY =~ ^[Yy]$ ]]
+	then
+	echo "I will get your stuff from {{target}}:"
+	
+	echo "**Firefox**"
+	read -p "Using the firefox snap? (y/n) " -n 1 -r SNAP
+	echo  
+	
+	if [[ $SNAP =~ ^[Yy]$ ]]
+	then
+	echo "  **SNAP**"
+		mv ~/snap/firefox/common/.mozilla ~/snap/firefox/common/.mozilla-local
+		scp -r $USER@{{target}}:.mozilla ~/snap/firefox/common/.mozilla/
+	else
+		mv ~/.mozilla ~/.mozilla-local
+		scp -r $USER@{{target}}:.mozilla ~/
+	fi
+
+	echo "**Joplin**"
+	mv ~/.config/Joplin ~/.config/Joplin-local
+	mv ~/.config/joplin-desktop ~/.config/joplin-desktop-local
+	scp -r $USER@{{target}}:.config/Joplin ~/.config/
+	scp -r $USER@{{target}}:.config/joplin-desktop ~/.config/
+	
+	echo "**Zotero**"
+	mv ~/.zotero ~/.zotero-local
+	mv ~/Zotero ~/Zotero-local
+	scp -r $USER@{{target}}:.zotero ~/
+	scp -r $USER@{{target}}:Zotero ~/
+
+	fi
+
+# Run all the stuff that needs a reboot afterwards
+first: yadm get-ansible ansible-system-pre-reboot
+
+# Then fix problems and setup apps
+# - apply my gnome config?
+# - firefox profile copy? (acceleration)
+
+# - fio fixed yet?
+
+
+# https://just.systems/man/en/
