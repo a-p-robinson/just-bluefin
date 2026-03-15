@@ -1,26 +1,36 @@
-# Choose bluefin version to rebase to.
-rebase:
-	#!/bin/bash
-	echo 'Select the bluefin version you want from the menu:'
-	ujust rebase-helper
-
-# Rebase to devmode.
-devmode:
-	ujust devmode
-
 # Set the hostname
 hostname host:
 	hostnamectl set-hostname {{host}}
 
-# Options if we are on a NVIDIA laptop
-nvidia-laptop:
-	#!/bin/bash
-	pushd ~/repos/ansible-silverblue
-	ansible-playbook -K nvidia_bluefin.yml
-	popd
-	ujust configure-nvidia
-	ujust configure-nvidia-optimus
+# Rebase to devmode.
+devmode:
+	ujust devmode
+	reboot
 
+# First update
+first-update:
+    ujust update
+    brew update
+
+# Run user setup for bluefin
+bluefin-user:
+	ujust dx-group
+	ujust toggle-user-motd
+	ujust bluefin-cli
+	brew bundle --file /usr/share/ublue-os/homebrew/system-dx-flatpaks.Brewfile
+	brew bundle --file /usr/share/ublue-os/homebrew/fonts.Brewfile
+
+# User apps through brew
+user-apps:
+	brew bundle
+	#!/bin/bash
+	source /home/apr/SCRIPTS/Joplin_install_and_update.sh
+	
+	# Can do joplin appimage if I have yadm....
+	# Fiji
+	# dia
+	# emacs
+	# headsetcontrol
 
 # Install my dotfiles.
 yadm:
@@ -40,40 +50,6 @@ get-ansible:
 	#!/bin/bash
 	if [ ! -d ~/repos ]; then mkdir ~/repos; fi
 	git clone -b bluefin git@github.com:a-p-robinson/ansible-silverblue.git ~/repos/ansible-silverblue
-
-# Apply "system" ansible roles.
-ansible-system-pre-reboot:
-	#!/bin/bash
-	pushd ~/repos/ansible-silverblue
-	ansible-playbook -K pre-reboot_base_system_home_bluefin.yml
-	
-# Apply "user" ansible roles.
-ansible-user:
-	#!/bin/bash
-	pushd ~/repos/ansible-silverblue
-	ansible-playbook -K user_apr_bluefin.yml
-	popd
-
-# Run user setup for bluefin
-bluefin-user:
-	ujust dx-group
-	ujust toggle-user-motd
-	#ujust bluefin-cli   # This is already included in my dotfiles
-	brew bundle --file ~/Brewfile
-
-# Setup remote access
-enable-remote-access:
-	#!/bin/bash
-	pushd ~/repos/ansible-silverblue
-	ansible-playbook -K remote_access.yml
-	popd
-
-# Setup remote access and remote-desktop
-enable-remote-desktop:
-	#!/bin/bash
-	pushd ~/repos/ansible-silverblue
-	ansible-playbook -K remote_access.yml --extra-vars "remote_desktop=true"
-	popd
 
 # Quick setup your app configs by copying from another system
 quick-set-apps target:
@@ -115,10 +91,10 @@ quick-set-apps target:
 
 
 # Run all the stuff that needs a reboot afterwards
-first: devmode yadm get-ansible ansible-system-pre-reboot
+#first: devmode yadm get-ansible ansible-system-pre-reboot
 
 # Setup my user account
-user: ansible-user bluefin-user
+#user: ansible-user bluefin-user
 
 # Then fix problems and setup apps
 # - apply my gnome config?
